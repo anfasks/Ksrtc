@@ -1,0 +1,12 @@
+# Flutter/Dart/Pub related
+**/build/
+.dart_tool/
+.packages
+pubspec.lock
+
+# IDE
+.vscode/
+.idea/
+
+# Generated
+generated_plugin_registrant.dart

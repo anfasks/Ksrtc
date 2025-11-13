@@ -1,0 +1,11 @@
+{
+  "name": "KSRTC Live Tracking",
+  "short_name": "KSRTC",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#004AAD",
+  "description": "Passenger live tracking portal for KSRTC journeys.",
+  "orientation": "portrait-primary",
+  "icons": []
+}

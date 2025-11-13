@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base href="/" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="Description" content="KSRTC passenger live tracking app" />
+    <title>KSRTC Live Tracking</title>
+    <link rel="manifest" href="manifest.json" />
+    <script defer src="flutter.js"></script>
+  </head>
+  <body>
+    <script>
+      window.addEventListener('load', function () {
+        _flutter.loader.loadEntrypoint({
+          onEntrypointLoaded: function (engineInitializer) {
+            engineInitializer.initializeEngine().then(function (appRunner) {
+              appRunner.runApp();
+            });
+          },
+        });
+      });
+    </script>
+  </body>
+</html>

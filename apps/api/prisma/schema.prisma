@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum JourneyStatus {
+  SCHEDULED
+  BOARDING
+  ON_ROAD
+  ARRIVED
+  CANCELLED
+}
+
+enum BookingStatus {
+  CONFIRMED
+  CHECKED_IN
+  CANCELLED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  phone     String?
+  email     String?  @unique
+  createdAt DateTime @default(now())
+  bookings  Booking[]
+}
+
+model Route {
+  id               String   @id @default(uuid())
+  code             String   @unique
+  originStop       Stop     @relation("RouteOrigin", fields: [originStopId], references: [id])
+  originStopId     String
+  destinationStop  Stop     @relation("RouteDestination", fields: [destinationStopId], references: [id])
+  destinationStopId String
+  journeys         Journey[]
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Stop {
+  id          String   @id @default(uuid())
+  name        String
+  lat         Float
+  lng         Float
+  address     String?
+  originRoutes      Route[] @relation("RouteOrigin")
+  destinationRoutes Route[] @relation("RouteDestination")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Vehicle {
+  id             String   @id @default(uuid())
+  registrationNo String   @unique
+  capacity       Int
+  journeys       Journey[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Journey {
+  id             String         @id @default(uuid())
+  route          Route          @relation(fields: [routeId], references: [id])
+  routeId        String
+  vehicle        Vehicle?       @relation(fields: [vehicleId], references: [id])
+  vehicleId      String?
+  serviceDate    DateTime
+  departureTime  DateTime
+  arrivalTime    DateTime
+  status         JourneyStatus  @default(SCHEDULED)
+  bookings       Booking[]
+  trackingLinks  TrackingLink[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model Booking {
+  id         String        @id @default(uuid())
+  bookingId  String        @unique
+  pnr        String        @unique
+  user       User          @relation(fields: [userId], references: [id])
+  userId     String
+  journey    Journey       @relation(fields: [journeyId], references: [id])
+  journeyId  String
+  seatNo     String?
+  status     BookingStatus @default(CONFIRMED)
+  createdAt  DateTime      @default(now())
+}
+
+model TrackingLink {
+  id         String         @id @default(uuid())
+  journey    Journey        @relation(fields: [journeyId], references: [id])
+  journeyId  String
+  shareUrl   String
+  issuedAt   DateTime       @default(now())
+  expiresAt  DateTime
+  issuedBy   String
+  notes      String?
+  audits     TrackingAudit[]
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  @@index([journeyId, issuedAt])
+}
+
+model TrackingAudit {
+  id             String       @id @default(uuid())
+  trackingLink   TrackingLink @relation(fields: [trackingLinkId], references: [id])
+  trackingLinkId String
+  event          String
+  payload        Json?
+  createdAt      DateTime @default(now())
+}
